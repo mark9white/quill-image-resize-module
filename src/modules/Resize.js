@@ -77,11 +77,14 @@ export class Resize extends BaseModule {
         // note starting mousedown position
         if(this.isMobile) {
             this.dragStartX = evt.touches[0].clientX;
+            this.dragStartY = evt.touches[0].clientY;
         } else {
             this.dragStartX = evt.clientX;
+            this.dragStartY = evt.clientY;
         }
         // store the width before the drag
         this.preDragWidth = this.img.width || this.img.naturalWidth;
+        this.preDragHeight = this.img.height || this.img.naturalHeight;
         // set the proper cursor everywhere
         this.setCursor(this.dragBox.style.cursor);
         // listen for movement and mouseup
@@ -115,18 +118,24 @@ export class Resize extends BaseModule {
         }
         // update image size
         var clientX;
+        var clientY;
         if(this.isMobile){
             clientX = evt.touches[0].clientX;
+            clientY = evt.touches[0].clientY;
         } else {
             clientX = evt.clientX;
+            clientY = evt.clientY;
         }
         const deltaX = clientX - this.dragStartX;
+        const deltaY = clientY - this.dragStartY;
         if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
             // left-side resize handler; dragging right shrinks image
             this.img.width = Math.round(this.preDragWidth - deltaX);
+            this.img.height = Math.round(this.preDragHeight - deltaY);
         } else {
             // right-side resize handler; dragging right enlarges image
             this.img.width = Math.round(this.preDragWidth + deltaX);
+            this.img.height = Math.round(this.preDragHeight + deltaY);
         }
         this.requestUpdate();
     };

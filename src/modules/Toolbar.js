@@ -1,16 +1,10 @@
-import Quill from 'quill';
-import IconAlignLeft from 'quill/assets/icons/align-left.svg';
-import IconAlignCenter from 'quill/assets/icons/align-center.svg';
-import IconAlignRight from 'quill/assets/icons/align-right.svg';
-import IconUndo from 'quill/assets/icons/undo.svg'
-import IconRedo from 'quill/assets/icons/redo.svg'
 import { BaseModule } from './BaseModule';
 
-const Parchment = Quill.import('parchment');
-const FloatStyle = new Parchment.Attributor.Style('float', 'float');
-const MarginStyle = new Parchment.Attributor.Style('margin', 'margin');
-const DisplayStyle = new Parchment.Attributor.Style('display', 'display');
-const TransformStyle = new Parchment.Attributor.Style("transform", "transform");
+import IconAlignLeft from '../assets/icons/align-left.svg';
+import IconAlignCenter from '../assets/icons/align-center.svg';
+import IconAlignRight from '../assets/icons/align-right.svg';
+import IconUndo from '../assets/icons/undo.svg'
+import IconRedo from '../assets/icons/redo.svg'
 
 export class Toolbar extends BaseModule {
 	rotation = 0;
@@ -35,34 +29,34 @@ export class Toolbar extends BaseModule {
 
 	_defineAlignments = () => {
 		this.rotationvalue = "";
-
+		const style = this.img.style;
 		this.alignments = [
 			{
 				icon: IconAlignLeft,
 				apply: () => {
-					DisplayStyle.add(this.img, 'inline');
-					FloatStyle.add(this.img, 'left');
-					MarginStyle.add(this.img, '0 1em 1em 0');
+					style.setProperty("display", 'inline');
+					style.setProperty("margin", '0 1em 1em 0');
+					style.setProperty("float", 'left');
 				},
-				isApplied: () => FloatStyle.value(this.img) == 'left',
+				isApplied: () => {},
 			},
 			{
 				icon: IconAlignCenter,
 				apply: () => {
-					DisplayStyle.add(this.img, 'block');
-					FloatStyle.remove(this.img);
-					MarginStyle.add(this.img, 'auto');
+					style.setProperty("display", "block");
+					style.setProperty("margin", "auto");
+					style.removeProperty("float");
 				},
-				isApplied: () => MarginStyle.value(this.img) == 'auto',
+				isApplied: () => {},
 			},
 			{
 				icon: IconAlignRight,
 				apply: () => {
-					DisplayStyle.add(this.img, 'inline');
-					FloatStyle.add(this.img, 'right');
-					MarginStyle.add(this.img, '0 0 1em 1em');
-				},
-				isApplied: () => FloatStyle.value(this.img) == 'right',
+					style.setProperty("display", 'inline');
+					style.setProperty("margin", '0 1em 1em 0');
+					style.setProperty("float", 'right');
+				},				
+				isApplied: () => {},
 			},
 			{
 				name: "rotate-left",
@@ -70,7 +64,7 @@ export class Toolbar extends BaseModule {
 				apply: () => {
 					const rotationvalue = this._setRotation("left");
 					this.img.setAttribute("_rotation", this.rotation);
-					TransformStyle.add(this.img, rotationvalue);
+					style.setProperty("transform", rotationvalue)
 				},
 				isApplied: () => {},
 			},
@@ -80,7 +74,7 @@ export class Toolbar extends BaseModule {
 				apply: () => {
 					const rotationvalue = this._setRotation("right");
 					this.img.setAttribute("_rotation", this.rotation);
-					TransformStyle.add(this.img, rotationvalue);
+					style.setProperty("transform", rotationvalue)
 				},
 				isApplied: () => {},
 			},

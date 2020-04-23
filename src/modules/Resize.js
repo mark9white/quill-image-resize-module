@@ -61,7 +61,7 @@ export class Resize extends BaseModule {
 
         // listen for mousedown on each box
         if(this.isMobile){
-            box.addEventListener('touchstart', this.handleMousedown, false);
+            box.addEventListener('touchstart', this.handleMousedown, { passive: true });
         } else {
             box.addEventListener('mousedown', this.handleMousedown, false);
         }
@@ -89,13 +89,12 @@ export class Resize extends BaseModule {
         this.setCursor(this.dragBox.style.cursor);
         // listen for movement and mouseup
         if(this.isMobile){
-            document.addEventListener('touchmove', this.handleDrag, false);
+            document.addEventListener('touchmove', this.handleDrag, { passive: true });
             document.addEventListener('touchend', this.handleMouseup, false);
         } else {
             document.addEventListener('mousemove', this.handleDrag, false);
             document.addEventListener('mouseup', this.handleMouseup, false);
         }
-        
     };
 
     handleMouseup = () => {
@@ -130,12 +129,12 @@ export class Resize extends BaseModule {
         const deltaY = clientY - this.dragStartY;
         if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
             // left-side resize handler; dragging right shrinks image
-            this.img.width = Math.round(this.preDragWidth - deltaX);
-            this.img.height = Math.round(this.preDragHeight - deltaY);
+            this.img.width = Math.max(Math.round(this.preDragWidth - deltaX), 40);
+            this.img.height = Math.max(Math.round(this.preDragHeight - deltaY), 40);
         } else {
             // right-side resize handler; dragging right enlarges image
-            this.img.width = Math.round(this.preDragWidth + deltaX);
-            this.img.height = Math.round(this.preDragHeight + deltaY);
+            this.img.width = Math.max(Math.round(this.preDragWidth + deltaX), 40);
+            this.img.height = Math.max(Math.round(this.preDragHeight + deltaY), 40);
         }
         this.requestUpdate();
     };

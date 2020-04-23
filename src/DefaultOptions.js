@@ -8,6 +8,7 @@ export default {
         position: 'absolute',
         boxSizing: 'border-box',
         border: '1px dashed #444',
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
     },
     handleStyles: {
         position: 'absolute',

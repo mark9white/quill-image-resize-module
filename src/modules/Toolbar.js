@@ -64,7 +64,8 @@ export class Toolbar extends BaseModule {
 				apply: () => {
 					const rotationvalue = this._setRotation("left");
 					this.img.setAttribute("_rotation", this.rotation);
-					style.setProperty("transform", rotationvalue)
+					this.checkForImageRotation(rotationvalue);
+					style.setProperty("transform", rotationvalue);
 				},
 				isApplied: () => {},
 			},
@@ -74,12 +75,55 @@ export class Toolbar extends BaseModule {
 				apply: () => {
 					const rotationvalue = this._setRotation("right");
 					this.img.setAttribute("_rotation", this.rotation);
+					this.checkForImageRotation(rotationvalue);
 					style.setProperty("transform", rotationvalue)
 				},
 				isApplied: () => {},
 			},
 		];
 	};
+
+	checkForImageRotation(rotationvalue) {
+		const parentPElement = this.getImageParent();
+		const parentPStyle = parentPElement.style;
+		if (rotationvalue === 'rotate(90deg)' || rotationvalue === 'rotate(270deg)') {
+			parentPStyle.setProperty("display", `flex`);
+			parentPStyle.setProperty("align-items", `center`);
+			parentPStyle.setProperty("height", `${this.img.width}px`);
+			parentPStyle.setProperty("justify-content", "center");
+		} else {
+			const displayFlex = parentPStyle.getPropertyValue("display");
+			const alignItemsCenter = parentPStyle.getPropertyValue("align-items");
+			const parentHeight = parentPStyle.getPropertyValue("height");
+			const justifyContentCenter = parentPStyle.getPropertyValue("justify-content", "center");
+
+			if (displayFlex) {
+				parentPStyle.removeProperty('display');
+			}
+			if (alignItemsCenter) {
+				parentPStyle.removeProperty("align-items");
+			}
+			if (parentHeight) {
+				parentPStyle.removeProperty("height");
+			}
+			if (justifyContentCenter) {
+				parentPStyle.removeProperty("justify-content");
+			}
+		}
+	}
+
+	getImageParent = () => {
+        let el = this.img;
+        const tagName = `p`;
+        while (el && el.parentNode) {
+            el = el.parentNode;
+            if (el.tagName && el.tagName.toLowerCase() == tagName) {
+                return el;
+            }
+        }
+        return null;
+    }
+
 
 	_addToolbarButtons = () => {
 		const buttons = [];

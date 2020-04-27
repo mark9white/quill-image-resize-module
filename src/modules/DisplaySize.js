@@ -17,8 +17,7 @@ export class DisplaySize extends BaseModule {
     onUpdate = () => {
         if (!this.display || !this.img) {
             return;
-        }
-
+        }        
         const size = this.getCurrentSize();
         this.display.innerHTML = size.join(' &times; ');
         if (size[0] > 120 && size[1] > 30) {

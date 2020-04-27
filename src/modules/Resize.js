@@ -129,15 +129,54 @@ export class Resize extends BaseModule {
         const deltaY = clientY - this.dragStartY;
         if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
             // left-side resize handler; dragging right shrinks image
-            this.img.width = Math.max(Math.round(this.preDragWidth - deltaX), 40);
-            this.img.height = Math.max(Math.round(this.preDragHeight - deltaY), 40);
+            if (this.isImageInverted()) {
+                const parentPElement = this.getImageParent();
+                const parentPStyle = parentPElement.style;
+                parentPStyle.setProperty("height", `${Math.max(Math.round(this.preDragWidth - deltaY), 80)}px`);
+                this.img.width = Math.max(Math.round(this.preDragWidth - deltaY), 80);
+                this.img.height = Math.max(Math.round(this.preDragHeight - deltaX), 80);
+            } else {
+                this.img.width = Math.max(Math.round(this.preDragWidth - deltaX), 80);
+                this.img.height = Math.max(Math.round(this.preDragHeight - deltaY), 80);
+            }
         } else {
             // right-side resize handler; dragging right enlarges image
-            this.img.width = Math.max(Math.round(this.preDragWidth + deltaX), 40);
-            this.img.height = Math.max(Math.round(this.preDragHeight + deltaY), 40);
+            if (this.isImageInverted()) {
+                const parentPElement = this.getImageParent();
+                const parentPStyle = parentPElement.style;
+                parentPStyle.setProperty("height", `${Math.max(Math.round(this.preDragWidth + deltaY), 80)}px`);
+                this.img.width = Math.max(Math.round(this.preDragWidth + deltaY), 80);
+                this.img.height = Math.max(Math.round(this.preDragHeight + deltaX), 80);
+            } else {
+                this.img.width = Math.max(Math.round(this.preDragWidth + deltaX), 80);
+                this.img.height = Math.max(Math.round(this.preDragHeight + deltaY), 80);
+            }
         }
         this.requestUpdate();
     };
+
+    getImageParent = () => {
+        let el = this.img;
+        const tagName = `p`;
+        while (el && el.parentNode) {
+            el = el.parentNode;
+            if (el.tagName && el.tagName.toLowerCase() == tagName) {
+                return el;
+            }
+        }
+        return null;
+    };
+
+    isImageInverted() {
+        if (this.img) {
+            const imgStyle = this.img.style;
+            const transformStyle = imgStyle.getPropertyValue("transform");
+            if (transformStyle === 'rotate(90deg)' || transformStyle === 'rotate(270deg)') {
+                return true
+            }
+        }
+        return false;
+    }
 
     setCursor = (value) => {
         [

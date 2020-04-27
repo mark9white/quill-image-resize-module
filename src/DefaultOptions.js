@@ -12,8 +12,8 @@ export default {
     },
     handleStyles: {
         position: 'absolute',
-        height: '12px',
-        width: '12px',
+        height: '16px',
+        width: '16px',
         backgroundColor: 'white',
         border: '1px solid #777',
         boxSizing: 'border-box',

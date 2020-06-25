@@ -158,12 +158,11 @@ export default class ImageResize {
 		const parent = this.quill.root.parentNode;		
 		const imgRect = this.img.getBoundingClientRect();
 		const containerRect = parent.getBoundingClientRect();
-
 		Object.assign(this.overlay.style, {
 			left: `${imgRect.left - containerRect.left - 1 + parent.scrollLeft}px`,
 			top: `${imgRect.top - containerRect.top + parent.scrollTop}px`,
-			width: `${imgRect.width}px`,
-			height: `${imgRect.height}px`,
+			width: `${imgRect.width || this.img.naturalWidth}px`,
+			height: `${imgRect.height || this.img.naturalHeight}px`,
 		});
 	};
 

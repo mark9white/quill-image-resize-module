@@ -1,8 +1,4 @@
 import { BaseModule } from './BaseModule';
-
-import IconAlignLeft from '../assets/icons/align-left.svg';
-import IconAlignCenter from '../assets/icons/align-center.svg';
-import IconAlignRight from '../assets/icons/align-right.svg';
 import IconUndo from '../assets/icons/undo.svg'
 import IconRedo from '../assets/icons/redo.svg'
 
@@ -32,33 +28,6 @@ export class Toolbar extends BaseModule {
 		const style = this.img.style;
 		this.alignments = [
 			{
-				icon: IconAlignLeft,
-				apply: () => {
-					style.setProperty("display", 'inline');
-					style.setProperty("margin", '0 1em 1em 0');
-					style.setProperty("float", 'left');
-				},
-				isApplied: () => {},
-			},
-			{
-				icon: IconAlignCenter,
-				apply: () => {
-					style.setProperty("display", "block");
-					style.setProperty("margin", "auto");
-					style.removeProperty("float");
-				},
-				isApplied: () => {},
-			},
-			{
-				icon: IconAlignRight,
-				apply: () => {
-					style.setProperty("display", 'inline');
-					style.setProperty("margin", '0 1em 1em 0');
-					style.setProperty("float", 'right');
-				},				
-				isApplied: () => {},
-			},
-			{
 				name: "rotate-left",
 				icon: IconUndo,
 				apply: () => {
@@ -86,11 +55,15 @@ export class Toolbar extends BaseModule {
 	checkForImageRotation(rotationvalue) {
 		const parentPElement = this.getImageParent();
 		const parentPStyle = parentPElement.style;
+		const containerWidth = this.getContainerWidth();
 		if (rotationvalue === 'rotate(90deg)' || rotationvalue === 'rotate(270deg)') {
 			parentPStyle.setProperty("display", `flex`);
 			parentPStyle.setProperty("align-items", `center`);
 			parentPStyle.setProperty("height", `${this.img.width}px`);
 			parentPStyle.setProperty("justify-content", "center");
+			if (this.img.height > containerWidth) {
+				this.img.height = this.getContainerWidth();
+			}
 		} else {
 			const displayFlex = parentPStyle.getPropertyValue("display");
 			const alignItemsCenter = parentPStyle.getPropertyValue("align-items");
@@ -108,6 +81,9 @@ export class Toolbar extends BaseModule {
 			}
 			if (justifyContentCenter) {
 				parentPStyle.removeProperty("justify-content");
+			}
+			if (this.img.width > containerWidth) {
+				this.img.width = this.getContainerWidth();
 			}
 		}
 	}
@@ -170,5 +146,11 @@ export class Toolbar extends BaseModule {
 	_selectButton = (button) => {
 		button.style.filter = 'invert(20%)';
 	};
+
+	getContainerWidth() {
+        const containerRect = this.container.getBoundingClientRect();
+        const style = this.container.currentStyle || window.getComputedStyle(this.container);
+        return containerRect.width - (parseInt(style.marginLeft) + parseInt(style.marginRight) + parseInt(style.paddingLeft) + parseInt(style.paddingRight));        
+    }
 
 }

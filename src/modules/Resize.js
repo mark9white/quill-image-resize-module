@@ -127,28 +127,32 @@ export class Resize extends BaseModule {
         }
         const deltaX = clientX - this.dragStartX;
         const deltaY = clientY - this.dragStartY;
+        const containerWidth = this.getContainerWidth();
+        const imgStyle = this.img.style;
         if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
             // left-side resize handler; dragging right shrinks image
             if (this.isImageInverted()) {
+                imgStyle.setProperty("max-width", "inherit");
                 const parentPElement = this.getImageParent();
                 const parentPStyle = parentPElement.style;
                 parentPStyle.setProperty("height", `${Math.max(Math.round(this.preDragWidth - deltaY), 80)}px`);
                 this.img.width = Math.max(Math.round(this.preDragWidth - deltaY), 80);
-                this.img.height = Math.max(Math.round(this.preDragHeight - deltaX), 80);
+                this.img.height = Math.max(Math.min(Math.round(this.preDragHeight - deltaX), containerWidth), 80);
             } else {
-                this.img.width = Math.max(Math.round(this.preDragWidth - deltaX), 80);
+                this.img.width = Math.max(Math.min(Math.round(this.preDragWidth - deltaX), containerWidth), 80);
                 this.img.height = Math.max(Math.round(this.preDragHeight - deltaY), 80);
             }
         } else {
             // right-side resize handler; dragging right enlarges image
             if (this.isImageInverted()) {
+                imgStyle.setProperty("max-width", "inherit");
                 const parentPElement = this.getImageParent();
                 const parentPStyle = parentPElement.style;
                 parentPStyle.setProperty("height", `${Math.max(Math.round(this.preDragWidth + deltaY), 80)}px`);
                 this.img.width = Math.max(Math.round(this.preDragWidth + deltaY), 80);
-                this.img.height = Math.max(Math.round(this.preDragHeight + deltaX), 80);
+                this.img.height = Math.max(Math.min(Math.round(this.preDragHeight + deltaX), containerWidth), 80);
             } else {
-                this.img.width = Math.max(Math.round(this.preDragWidth + deltaX), 80);
+                this.img.width = Math.max(Math.min(Math.round(this.preDragWidth + deltaX), containerWidth), 80);
                 this.img.height = Math.max(Math.round(this.preDragHeight + deltaY), 80);
             }
         }
@@ -176,6 +180,12 @@ export class Resize extends BaseModule {
             }
         }
         return false;
+    }
+
+    getContainerWidth() {
+        const containerRect = this.container.getBoundingClientRect();
+        const style = this.container.currentStyle || window.getComputedStyle(this.container);
+        return containerRect.width - (parseInt(style.marginLeft) + parseInt(style.marginRight) + parseInt(style.paddingLeft) + parseInt(style.paddingRight));        
     }
 
     setCursor = (value) => {

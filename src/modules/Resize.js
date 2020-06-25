@@ -132,7 +132,7 @@ export class Resize extends BaseModule {
         if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
             // left-side resize handler; dragging right shrinks image
             if (this.isImageInverted()) {
-                imgStyle.setProperty("max-width", "inherit");
+                imgStyle.setProperty("max-width", "none");
                 const parentPElement = this.getImageParent();
                 const parentPStyle = parentPElement.style;
                 parentPStyle.setProperty("height", `${Math.max(Math.round(this.preDragWidth - deltaY), 80)}px`);
@@ -145,7 +145,7 @@ export class Resize extends BaseModule {
         } else {
             // right-side resize handler; dragging right enlarges image
             if (this.isImageInverted()) {
-                imgStyle.setProperty("max-width", "inherit");
+                imgStyle.setProperty("max-width", "none");
                 const parentPElement = this.getImageParent();
                 const parentPStyle = parentPElement.style;
                 parentPStyle.setProperty("height", `${Math.max(Math.round(this.preDragWidth + deltaY), 80)}px`);
@@ -162,10 +162,14 @@ export class Resize extends BaseModule {
     getImageParent = () => {
         let el = this.img;
         const tagName = `p`;
-        while (el && el.parentNode) {
+        while (el && el.parentNode) {            
             el = el.parentNode;
             if (el.tagName && el.tagName.toLowerCase() == tagName) {
-                return el;
+                if (el.children.length === 1) {
+                    return el;
+                } else {
+                    return this.img.parentNode;
+                }
             }
         }
         return null;

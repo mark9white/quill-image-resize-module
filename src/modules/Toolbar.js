@@ -88,17 +88,21 @@ export class Toolbar extends BaseModule {
 		}
 	}
 
-	getImageParent = () => {
+    getImageParent = () => {
         let el = this.img;
         const tagName = `p`;
-        while (el && el.parentNode) {
+        while (el && el.parentNode) {            
             el = el.parentNode;
             if (el.tagName && el.tagName.toLowerCase() == tagName) {
-                return el;
+                if (el.children.length === 1) {
+                    return el;
+                } else {
+                    return this.img.parentNode;
+                }
             }
         }
         return null;
-    }
+    };
 
 
 	_addToolbarButtons = () => {

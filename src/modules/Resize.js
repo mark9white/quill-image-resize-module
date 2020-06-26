@@ -1,5 +1,5 @@
 import { BaseModule } from './BaseModule';
-
+const MINIMUM_WIDTH = 80;
 export class Resize extends BaseModule {
     
     checkMobile = () => {
@@ -129,18 +129,20 @@ export class Resize extends BaseModule {
         const deltaY = clientY - this.dragStartY;
         const containerWidth = this.getContainerWidth();
         const imgStyle = this.img.style;
+        const minimumHeight = this.getMinimumHeightBasedOnTheAspectRatio();
+        
         if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
             // left-side resize handler; dragging right shrinks image
             if (this.isImageInverted()) {
                 imgStyle.setProperty("max-width", "none");
                 const parentPElement = this.getImageParent();
                 const parentPStyle = parentPElement.style;
-                parentPStyle.setProperty("height", `${Math.max(Math.round(this.preDragWidth - deltaY), 80)}px`);
-                this.img.width = Math.max(Math.round(this.preDragWidth - deltaY), 80);
-                this.img.height = Math.max(Math.min(Math.round(this.preDragHeight - deltaX), containerWidth), 80);
+                parentPStyle.setProperty("height", `${Math.max(Math.min(Math.round(this.preDragWidth - deltaY), this.getImageMaximumWidth()), minimumHeight)}px`);
+                this.img.width = Math.max(Math.min(Math.round(this.preDragWidth - deltaY), this.getImageMaximumWidth()), minimumHeight);
+                this.img.height = Math.max(Math.min(Math.min(Math.round(this.preDragHeight - deltaX), this.getImageMaximumHeight()), containerWidth), MINIMUM_WIDTH);
             } else {
-                this.img.width = Math.max(Math.min(Math.round(this.preDragWidth - deltaX), containerWidth), 80);
-                this.img.height = Math.max(Math.round(this.preDragHeight - deltaY), 80);
+                this.img.width = Math.max(Math.min(Math.min(Math.round(this.preDragWidth - deltaX), this.getImageMaximumWidth()), containerWidth), MINIMUM_WIDTH);
+                this.img.height = Math.max(Math.min(Math.round(this.preDragHeight - deltaY), this.getImageMaximumHeight()), minimumHeight);
             }
         } else {
             // right-side resize handler; dragging right enlarges image
@@ -148,12 +150,12 @@ export class Resize extends BaseModule {
                 imgStyle.setProperty("max-width", "none");
                 const parentPElement = this.getImageParent();
                 const parentPStyle = parentPElement.style;
-                parentPStyle.setProperty("height", `${Math.max(Math.round(this.preDragWidth + deltaY), 80)}px`);
-                this.img.width = Math.max(Math.round(this.preDragWidth + deltaY), 80);
-                this.img.height = Math.max(Math.min(Math.round(this.preDragHeight + deltaX), containerWidth), 80);
+                parentPStyle.setProperty("height", `${Math.max(Math.min(Math.round(this.preDragWidth + deltaY), this.getImageMaximumWidth()), minimumHeight)}px`);
+                this.img.width = Math.max(Math.min(Math.round(this.preDragWidth + deltaY), this.getImageMaximumWidth()), minimumHeight);
+                this.img.height = Math.max(Math.min(Math.min(Math.round(this.preDragHeight + deltaX), this.getImageMaximumHeight()), containerWidth), MINIMUM_WIDTH);
             } else {
-                this.img.width = Math.max(Math.min(Math.round(this.preDragWidth + deltaX), containerWidth), 80);
-                this.img.height = Math.max(Math.round(this.preDragHeight + deltaY), 80);
+                this.img.width = Math.max(Math.min(Math.min(Math.round(this.preDragWidth + deltaX), this.getImageMaximumWidth()), containerWidth), MINIMUM_WIDTH);
+                this.img.height = Math.max(Math.min(Math.round(this.preDragHeight + deltaY), this.getImageMaximumHeight()), minimumHeight);
             }
         }
         this.requestUpdate();
@@ -180,16 +182,30 @@ export class Resize extends BaseModule {
             const imgStyle = this.img.style;
             const transformStyle = imgStyle.getPropertyValue("transform");
             if (transformStyle === 'rotate(90deg)' || transformStyle === 'rotate(270deg)') {
-                return true
+                return true;
             }
         }
         return false;
+    }
+
+    getImageMaximumWidth() {
+        return this.img.naturalWidth * 2;
+    }
+
+    getImageMaximumHeight() {
+        return this.img.naturalHeight * 2;
     }
 
     getContainerWidth() {
         const containerRect = this.container.getBoundingClientRect();
         const style = this.container.currentStyle || window.getComputedStyle(this.container);
         return containerRect.width - (parseInt(style.marginLeft) + parseInt(style.marginRight) + parseInt(style.paddingLeft) + parseInt(style.paddingRight));        
+    }
+
+    getMinimumHeightBasedOnTheAspectRatio() {
+        const {naturalHeight, naturalWidth} = this.img;
+        const aspectRatioRelativeToMinimumWidth = Math.round(naturalHeight / (naturalWidth/80));
+        return aspectRatioRelativeToMinimumWidth;
     }
 
     setCursor = (value) => {

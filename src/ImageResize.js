@@ -16,51 +16,83 @@ export default class ImageResize {
 	constructor(quill, options = {}) {
 		// save the quill reference and options
 		this.quill = quill;
-
 		// Apply the options to our defaults, and stash them for later
 		// defaultsDeep doesn't do arrays as you'd expect, so we'll need to apply the classes array from options separately
 		let moduleClasses = false;
 		if (options.modules) {
 			moduleClasses = options.modules.slice();
 		}
-
 		// Apply options to default options
 		this.options = defaultsDeep({}, options, DefaultOptions);
-
 		// (see above about moduleClasses)
 		if (moduleClasses !== false) {
 			this.options.modules = moduleClasses;
 		}
-
 		// disable native image resizing on firefox
 		document.execCommand('enableObjectResizing', false, 'false');
-
 		// respond to clicks inside the editor
 		this.quill.root.addEventListener('click', this.handleClick, false);
 		this.quill.root.addEventListener('scroll', this.hide, false);
 		this.quill.root.parentNode.style.position = this.quill.root.parentNode.style.position || 'relative';
-
 		// setup modules
 		this.moduleClasses = this.options.modules;
-
 		this.modules = [];
 	}
 
 	initializeModules = () => {
 		this.removeModules();
-
 		this.modules = this.moduleClasses.map(
 			ModuleClass => new (knownModules[ModuleClass] || ModuleClass)(this),
 		);
-
 		this.modules.forEach(
 			(module) => {
 				module.onCreate();
 			},
 		);
-
 		this.onUpdate();
 	};
+
+	getImageParent = () => {
+        let el = this.img;
+        const tagName = `p`;
+        while (el && el.parentNode) {            
+            el = el.parentNode;
+            if (el.tagName && el.tagName.toLowerCase() == tagName) {
+                if (el.children.length === 1) {
+                    return el;
+                } else {
+                    return this.img.parentNode;
+                }
+            }
+        }
+        return null;
+    };
+
+    isImageInverted = () => {
+        if (this.img) {
+            const imgStyle = this.img.style;
+            const transformStyle = imgStyle.getPropertyValue("transform");
+            if (transformStyle === 'rotate(90deg)' || transformStyle === 'rotate(270deg)') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+	setStyles = () => {
+		if (this.isImageInverted()) {
+			const imgStyle = this.img.style;
+			const flexStyle = imgStyle.getPropertyValue("flex");
+			if (!flexStyle) {
+				const parentPElement = this.getImageParent();
+				const parentPStyle = parentPElement.style;
+				parentPStyle.setProperty("display", `flex`);
+				parentPStyle.setProperty("align-items", `center`);
+				parentPStyle.setProperty("height", `${this.img.width}px`);
+				parentPStyle.setProperty("justify-content", "center");
+			}
+		}
+	}
 
 	onUpdate = () => {
 		this.repositionElements();
@@ -77,7 +109,6 @@ export default class ImageResize {
 				module.onDestroy();
 			},
 		);
-
 		this.modules = [];
 	};
 
@@ -102,9 +133,8 @@ export default class ImageResize {
 	show = (img) => {
 		// keep track of this img element
 		this.img = img;
-
+		this.setStyles();
 		this.showOverlay();
-
 		this.initializeModules();
 	};
 

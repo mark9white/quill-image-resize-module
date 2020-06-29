@@ -14,7 +14,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/kensnyder/quill-image-resize-module.git"
+		"url": "git+https://github.com/pentanaveen/quill-image-resize-module.git"
 	},
 	"keywords": [
 		"quill",
@@ -23,7 +23,7 @@
 		"resize",
 		"sizer"
 	],
-	"author": "@kensnyder",
+	"author": "Naveen Penta",
 	"contributors": [
 		{
 			"name": "Wikia",
@@ -32,9 +32,9 @@
 	],
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/kensnyder/quill-image-resize-module/issues"
+		"url": "https://github.com/pentanaveen/quill-image-resize-module/issues"
 	},
-	"homepage": "https://github.com/kensnyder/quill-image-resize-module#readme",
+	"homepage": "https://github.com/pentanaveen/quill-image-resize-module#readme",
 	"devDependencies": {
 		"babel-cli": "^6.24.0",
 		"babel-eslint": "^7.2.1",

@@ -14,7 +14,25 @@ export class Toolbar extends BaseModule {
 		// Setup Buttons
 		this._defineAlignments();
 		this._addToolbarButtons();
-		this.rotation = +this.img.getAttribute("_rotation") || 0;
+		const imgStyle = this.img.style;
+		const transformStyle = imgStyle.getPropertyValue("transform");
+		this.rotation =  +this.img.getAttribute("_rotation") || 0;
+		if (transformStyle) {
+			switch (transformStyle) {
+				case 'rotate(90deg)':
+					this.rotation = 90;
+					break;
+				case 'rotate(180deg)':
+					this.rotation = 180;
+					break;
+				case 'rotate(270deg)':
+					this.rotation = 270;
+					break;
+				default:
+					this.rotation = 0;
+					break;
+			}
+		}
 	};
 
 	// The toolbar and its children will be destroyed when the overlay is removed
@@ -45,7 +63,7 @@ export class Toolbar extends BaseModule {
 					const rotationvalue = this._setRotation("right");
 					this.img.setAttribute("_rotation", this.rotation);
 					this.checkForImageRotation(rotationvalue);
-					style.setProperty("transform", rotationvalue)
+					style.setProperty("transform", rotationvalue);
 				},
 				isApplied: () => {},
 			},
